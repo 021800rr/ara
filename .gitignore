@@ -1,0 +1,28 @@
+/.idea
+
+###> symfony/framework-bundle ###
+/BE/.env.local
+/BE/.env.local.php
+/BE/.env.*.local
+/BE/config/secrets/prod/prod.decrypt.private.php
+/BE/public/bundles/
+/BE/var/
+/BE/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+/BE/.phpunit.result.cache
+/BE/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> phpstan/phpstan ###
+/BE/phpstan.neon
+###< phpstan/phpstan ###
+/BE/tools/
+/BE/.idea/
+/BE/.php-cs-fixer.cache
+
+/docker/.idea
+/docker/postgres/data
+
+
