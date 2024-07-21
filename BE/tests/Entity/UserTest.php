@@ -5,22 +5,21 @@ namespace App\Tests\Entity;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Config\UserStatus;
 use App\Entity\User;
-use App\Tests\SetupTrait;
+use App\Tests\SetUpTrait;
 
 class   UserTest extends ApiTestCase
 {
-    use SetupTrait;
+    use SetUpTrait;
 
-    private const USER_URL = '/api/users';
-    private const HYDRA_TOTAL_ITEMS = 'hydra:totalItems';
-    private const HYDRA_MEMBER = 'hydra:member';
-
-    private const LOGIN_EMAIL = 'admin@example.com';
-    private const LOGIN_PASSWORD = 'test';
+    private const string USER_URL = '/api/users';
+    private const string HYDRA_TOTAL_ITEMS = 'hydra:totalItems';
+    private const string HYDRA_MEMBER = 'hydra:member';
+    private const string LOGIN_EMAIL = 'admin@example.com';
+    private const string LOGIN_PASSWORD = 'test';
 
     protected function setUp(): void
     {
-        $this->setRepositories();
+        $this->setUpRepositories();
     }
 
     public function testGet(): void
@@ -87,7 +86,7 @@ class   UserTest extends ApiTestCase
         ]);
     }
 
-    public function testGetCollectionByPartOfNameAndSurnameCaseInsensitive(): void
+    public function testGetCollectionByNameAndSurname(): void
     {
         $token = $this->login(self::LOGIN_EMAIL, self::LOGIN_PASSWORD);
         $client = self::createClient();

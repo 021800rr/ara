@@ -19,12 +19,15 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 )]
 class RefreshToken extends BaseRefreshToken
 {
+    /** {@inheritDoc} */
     #[SerializedName('refresh_token')]
     protected $refreshToken;
 
+    /** {@inheritDoc} */
     #[Ignore]
     protected $username;
 
+    /** {@inheritDoc} */
     #[Ignore]
     protected $valid;
 }

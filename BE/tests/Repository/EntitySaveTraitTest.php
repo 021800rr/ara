@@ -3,11 +3,11 @@
 namespace App\Tests\Repository;
 
 use App\Entity\User;
-use App\Repository\RepositoryTrait;
+use App\Repository\EntitySaveTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
-class RepositoryTraitTest extends TestCase
+class EntitySaveTraitTest extends TestCase
 {
     public function testSave(): void
     {
@@ -23,7 +23,7 @@ class RepositoryTraitTest extends TestCase
             ->method('flush');
 
         $repository = new class($entityManager) {
-            use RepositoryTrait;
+            use EntitySaveTrait;
 
             private EntityManagerInterface $entityManager;
 
@@ -55,7 +55,7 @@ class RepositoryTraitTest extends TestCase
             ->method('flush');
 
         $repository = new class($entityManager) {
-            use RepositoryTrait;
+            use EntitySaveTrait;
 
             private EntityManagerInterface $entityManager;
 

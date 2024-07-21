@@ -3,7 +3,7 @@ FROM php:8.3-fpm
 RUN ln -s /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
 RUN apt-get update && apt install -y \
-    libzip-dev zip libicu-dev libpq-dev wget vim acl git mc nmap libxslt1-dev procps \
+    libzip-dev zip libicu-dev libpq-dev wget acl git libxslt1-dev procps \
     librabbitmq-dev \
     libssh-dev \
     && docker-php-ext-install \

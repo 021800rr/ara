@@ -9,6 +9,7 @@ use App\State\LogoutProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -68,7 +69,7 @@ class LogoutProcessorTest extends TestCase
 
         $operation = $this->createMock(Operation::class);
 
-        $this->logoutProcessor->process($tokenDto, $operation, [], []);
+        $this->logoutProcessor->process($tokenDto, $operation);
 
         // Checking whether the logger was invoked in the correct order
         $this->assertCount(3, $loggerCalls);
@@ -96,7 +97,7 @@ class LogoutProcessorTest extends TestCase
 
         $operation = $this->createMock(Operation::class);
 
-        $this->logoutProcessor->process($tokenDto, $operation, [], []);
+        $this->logoutProcessor->process($tokenDto, $operation);
     }
 
     private function createValidToken(): string
@@ -140,6 +141,7 @@ class LogoutProcessorTest extends TestCase
 
     /**
      * @return RefreshToken&MockObject
+     * @throws Exception
      */
     private function setUpRefreshTokenMock(): MockObject
     {
@@ -147,9 +149,6 @@ class LogoutProcessorTest extends TestCase
         $refreshToken->expects($this->once())
             ->method('getRefreshToken')
             ->willReturn('some-refresh-token');
-//        $refreshToken->expects($this->once())
-//            ->method('getUsername')
-//            ->willReturn('test@example.com');
 
         return $refreshToken;
     }
@@ -157,6 +156,7 @@ class LogoutProcessorTest extends TestCase
     /**
      * @param MockObject&RefreshToken $refreshToken
      * @return EntityRepository<RefreshToken>&MockObject
+     * @throws Exception
      */
     private function setUpRepositoryMock(MockObject $refreshToken): MockObject
     {

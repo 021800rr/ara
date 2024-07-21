@@ -42,15 +42,6 @@ services:
     networks:
       - cf-net
 
-  cf-rabbitmq:
-     image: rabbitmq:3-management
-     container_name: cf-rabbitmq-dev
-     ports:
-       - "5672:5672"
-       - "15672:15672"
-     networks:
-       - cf-net
-
 networks:
   cf-net:
     driver: bridge

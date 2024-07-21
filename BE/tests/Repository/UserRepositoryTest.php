@@ -4,17 +4,17 @@ namespace App\Tests\Repository;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\User;
-use App\Tests\SetupTrait;
+use App\Tests\SetUpTrait;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 class UserRepositoryTest extends ApiTestCase
 {
-    use SetupTrait;
+    use SetUpTrait;
 
     protected function setUp(): void
     {
-        $this->setRepositories();
+        $this->setUpRepositories();
     }
 
     public function testUpgradePassword(): void

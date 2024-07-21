@@ -1,5 +1,6 @@
 parameters:
     jwt_token_ttl: '%env(JWT_TOKEN_TTL)%'
+    available_currencies: '%env(csv:AVAILABLE_CURRENCIES)%'
 
 services:
     _defaults:
