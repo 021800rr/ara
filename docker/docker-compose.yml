@@ -1,9 +1,9 @@
 services:
 
-  cf-php:
+  ara-php:
     build:
       dockerfile: php/Dockerfile
-    container_name: cf-php-dev
+    container_name: ara-php-dev
     volumes:
       - ./../BE/:/var/www
       - ./php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
@@ -12,11 +12,11 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      - cf-net
+      - ara-net
 
-  cf-nginx:
+  ara-nginx:
     image: nginx # :1.25-alpine
-    container_name: cf-nginx-dev
+    container_name: ara-nginx-dev
     restart: unless-stopped
     ports:
       - "${NGINX_PORTS}"
@@ -24,11 +24,11 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d
       - ./../BE/public:/var/www/public
     networks:
-      - cf-net
+      - ara-net
 
-  cf-postgres:
+  ara-postgres:
     image: postgres:16-alpine
-    container_name: cf-postgres-dev
+    container_name: ara-postgres-dev
     restart: unless-stopped
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
@@ -38,11 +38,9 @@ services:
       - "${POSTGRES_PORTS}"
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
-      - ./postgres/tmp:/tmp:wr
     networks:
-      - cf-net
+      - ara-net
 
 networks:
-  cf-net:
+  ara-net:
     driver: bridge
-
