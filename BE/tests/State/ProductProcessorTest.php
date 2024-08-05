@@ -31,7 +31,7 @@ class ProductProcessorTest extends TestCase
         $productDto = new ProductDto();
         $productDto->name = 'Test Product';
         $productDto->description = 'Test Description';
-        $productDto->prices = ['USD' => 10.1, 'EUR' => 9.0];
+        $productDto->price = 10.1;
 
         $operation = new Post();
 
@@ -41,7 +41,7 @@ class ProductProcessorTest extends TestCase
                 return $product instanceof Product &&
                     $product->getName() === $productDto->name &&
                     $product->getDescription() === $productDto->description &&
-                    $product->getPrice('USD') === $productDto->prices['USD'];
+                    $product->getPrice() === $productDto->price;
             }));
 
         $this->entityManager->expects($this->once())
@@ -55,7 +55,7 @@ class ProductProcessorTest extends TestCase
         $productDto = new ProductDto();
         $productDto->name = 'Updated Product';
         $productDto->description = 'Updated Description';
-        $productDto->prices = ['USD' => 110.1, 'EUR' => 100];
+        $productDto->price = 110.1;
 
         $operation = new Put();
         $uriVariables = ['id' => 1];
@@ -81,7 +81,7 @@ class ProductProcessorTest extends TestCase
                 return $product instanceof Product &&
                     $product->getName() === $productDto->name &&
                     $product->getDescription() === $productDto->description &&
-                    $product->getPrice('USD') === $productDto->prices['USD'];
+                    $product->getPrice() === $productDto->price;
             }));
 
         $this->entityManager->expects($this->once())
@@ -90,12 +90,12 @@ class ProductProcessorTest extends TestCase
         $this->productProcessor->process($productDto, $operation, $uriVariables);
     }
 
-    public function testPostProcessWithMissingPrices(): void
+    public function testPostProcessWithMissingPrice(): void
     {
         $productDto = new ProductDto();
         $productDto->name = 'Test Product';
         $productDto->description = 'Test Description';
-        $productDto->prices = [];
+        $productDto->price = null;
 
         $operation = new Post();
 
@@ -105,7 +105,7 @@ class ProductProcessorTest extends TestCase
                 return $product instanceof Product &&
                     $product->getName() === $productDto->name &&
                     $product->getDescription() === $productDto->description &&
-                    empty($product->getPrices());
+                    empty($product->getPrice());
             }));
 
         $this->entityManager->expects($this->once())
@@ -131,7 +131,7 @@ class ProductProcessorTest extends TestCase
         $productDto = new ProductDto();
         $productDto->name = 'Non Existent Product';
         $productDto->description = 'Non Existent Description';
-        $productDto->prices = ['USD' => 110.1, 'EUR' => 100];
+        $productDto->price = 110.1;
 
         $operation = new Put();
         $uriVariables = ['id' => 999];

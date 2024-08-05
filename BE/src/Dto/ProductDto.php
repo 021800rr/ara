@@ -2,7 +2,6 @@
 
 namespace App\Dto;
 
-use App\Validator\Constraints as AppAssert;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,16 +17,8 @@ class ProductDto
     #[Groups(['product:write'])]
     public ?string $description = null;
 
-    /**
-     * @var array<string, float>
-     */
     #[Assert\NotBlank]
-    #[Assert\Type('array')]
-    #[Assert\All([
-        new Assert\Type('numeric'),
-        new Assert\NotBlank(),
-    ])]
-    #[AppAssert\ValidCurrency]
+    #[Assert\Type('numeric')]
     #[Groups(['product:write'])]
-    public array $prices = [];
+    public null|float|int $price;
 }

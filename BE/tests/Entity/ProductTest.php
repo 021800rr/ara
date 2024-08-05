@@ -18,12 +18,12 @@ class ProductTest extends ApiTestCase
     private const array NEW_PRODUCT = [
         'name' => 'New Product',
         'description' => 'Product Description',
-        'prices' => ['USD' => 100.1, 'EUR' => 90]
+        'price' => 100.1
     ];
     private const array UPDATED_PRODUCT = [
         'name' => 'Updated Product',
         'description' => 'Updated Description',
-        'prices' => ['USD' => 110.1, 'EUR' => 100]
+        'price' => 110.1
     ];
     private const string PLAIN_PASSWORD = 'test';
 
@@ -42,14 +42,13 @@ class ProductTest extends ApiTestCase
         $this->userToken = $this->login((string) $user->getEmail(), self::PLAIN_PASSWORD);
     }
 
-    /** @param array<string, float|int> $prices */
-    #[DataProvider('pricesProvider')]
-    public function testProductDto(array $prices, int $expectedViolationCount): void
+    #[DataProvider('priceProvider')]
+    public function testProductDto(null|int|float $price, int $expectedViolationCount): void
     {
         $dto = new ProductDto();
         $dto->name = 'Test Product';
         $dto->description = 'Test Description';
-        $dto->prices = $prices;
+        $dto->price = $price;
 
         $violations = $this->validator->validate($dto);
 
@@ -57,15 +56,14 @@ class ProductTest extends ApiTestCase
     }
 
     /**
-     * @return array<array{0: array<string, mixed>, 1: int}>
+     * @return array<int, array{0: int|float|null, 1: int}>
      */
-    public static function pricesProvider(): array
+    public static function priceProvider(): array
     {
         return [
-            [['USD' => 10.1, 'EUR' => 9], 0], // Valid case
-            [['USD' => 'invalid', 'EUR' => null], 2], // Invalid prices
-            [[], 1], // Missing prices
-            [['VND' => 23000], 1], // Unsupported currency (Vietnamese Dong)
+            [10.1, 0], // Valid case
+            [1, 0], // Valid case
+            [null, 1], // Missing price
         ];
     }
 
@@ -74,8 +72,7 @@ class ProductTest extends ApiTestCase
         $product = new Product();
         $product->setName('Test Product');
         $product->setDescription(str_repeat('a', 10000));
-        $product->setPrice('USD', 10.0);
-        $product->setPrice('EUR', 9.0);
+        $product->setPrice(10.0);
 
         $violations = $this->validator->validate($product);
 
@@ -148,7 +145,7 @@ class ProductTest extends ApiTestCase
 
         $this->assertEquals(self::UPDATED_PRODUCT['name'], $updatedProduct['name']);
         $this->assertEquals(self::UPDATED_PRODUCT['description'], $updatedProduct['description']);
-        $this->assertEquals(self::UPDATED_PRODUCT['prices'], $updatedProduct['prices']);
+        $this->assertEquals(self::UPDATED_PRODUCT['price'], $updatedProduct['price']);
     }
 
     public function testUserCannotDeleteProduct(): void

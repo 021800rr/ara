@@ -21,7 +21,7 @@ final class Version20240721111135 extends AbstractMigration
                             id INT NOT NULL, 
                             name VARCHAR(255) NOT NULL, 
                             description TEXT DEFAULT NULL, 
-                            prices JSON NOT NULL, 
+                            price FLOAT NOT NULL, 
                             PRIMARY KEY(id))
         ');
     }

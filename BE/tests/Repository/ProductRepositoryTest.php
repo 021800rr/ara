@@ -20,8 +20,7 @@ class ProductRepositoryTest extends ApiTestCase
         $product = new Product();
         $product->setName('Test Product');
         $product->setDescription('Test Description');
-        $product->setPrice('USD', 100);
-        $product->setPrice('EUR', 90.1);
+        $product->setPrice(100);
 
         $this->productRepository->save($product, true);
 
@@ -30,8 +29,7 @@ class ProductRepositoryTest extends ApiTestCase
         $this->assertNotNull($savedProduct);
         $this->assertEquals('Test Product', $savedProduct->getName());
         $this->assertEquals('Test Description', $savedProduct->getDescription());
-        $this->assertEquals(100.0, $savedProduct->getPrice('USD'));
-        $this->assertEquals(90.1, $savedProduct->getPrice('EUR'));
+        $this->assertEquals(100, $savedProduct->getPrice());
     }
 
     public function testRemoveProduct(): void

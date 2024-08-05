@@ -14,7 +14,6 @@ use ApiPlatform\Metadata\Put;
 use App\Dto\ProductDto;
 use App\Repository\ProductRepository;
 use App\State\ProductProcessor;
-use App\Validator\Constraints as AppAssert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -67,36 +66,31 @@ class Product
     #[Assert\NotBlank]
     #[Assert\Type(type: Types::STRING)]
     #[Groups(['product:read', 'product:write'])]
-    private string $name;
+    private ?string $name;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Type(type: Types::STRING)]
     #[Groups(['product:read', 'product:write'])]
     private ?string $description = null;
 
-    /** @var array<string, float|int> */
-    #[ORM\Column(type: Types::JSON)]
+
+    #[ORM\Column(type: Types::FLOAT)]
     #[Assert\NotBlank]
-    #[Assert\Type('array')]
-    #[Assert\All([
-        new Assert\Type('numeric'),
-        new Assert\NotBlank(),
-    ])]
-    #[AppAssert\ValidCurrency]
+    #[Assert\Type('numeric')]
     #[Groups(['product:read', 'product:write'])]
-    private array $prices = [];
+    private null|float|int $price;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -115,20 +109,14 @@ class Product
         return $this;
     }
 
-    /** @return array<string, float|int> */
-    public function getPrices(): array
+    public function getPrice(): null|float|int
     {
-        return $this->prices;
+        return $this->price;
     }
 
-    public function getPrice(string $currency): float
+    public function setPrice(null|float|int $price): self
     {
-        return (float) $this->prices[$currency];
-    }
-
-    public function setPrice(string $currency, float $price): self
-    {
-        $this->prices[$currency] = $price;
+        $this->price = $price;
 
         return $this;
     }

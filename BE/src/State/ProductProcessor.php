@@ -43,9 +43,7 @@ final readonly class ProductProcessor implements ProcessorInterface
         $product->setName($data->name);
         $product->setDescription($data->description);
 
-        foreach ($data->prices as $currency => $price) {
-            $product->setPrice($currency, $price);
-        }
+        $product->setPrice($data->price);
 
         $this->entityManager->persist($product);
         $this->entityManager->flush();

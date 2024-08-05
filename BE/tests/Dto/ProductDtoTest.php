@@ -16,14 +16,13 @@ class ProductDtoTest extends ApiTestCase
         $this->setUpValidator();
     }
 
-    /** @param array<string, float> $prices */
-    #[DataProvider('pricesProvider')]
-    public function testProductDto(array $prices, int $expectedViolationCount): void
+    #[DataProvider('priceProvider')]
+    public function testProductDto(null|float|int $price, int $expectedViolationCount): void
     {
         $dto = new ProductDto();
         $dto->name = 'Test Product';
         $dto->description = 'Test Description';
-        $dto->prices = $prices;
+        $dto->price = $price;
 
         $violations = $this->validator->validate($dto);
 
@@ -31,15 +30,14 @@ class ProductDtoTest extends ApiTestCase
     }
 
     /**
-     * @return array<array{0: array<string, mixed>, 1: int}>
+     * @return array<int, array{0: int|float|null, 1: int}>
      */
-    public static function pricesProvider(): array
+    public static function priceProvider(): array
     {
         return [
-            [['USD' => 10, 'EUR' => 9.1], 0], // Valid case
-            [['USD' => 'invalid', 'EUR' => null], 2], // Invalid prices
-            [[], 1], // Missing prices
-            [['VND' => 23000.0], 1], // Unsupported currency (Vietnamese Dong)
+            [10, 0], // Valid case
+            [11.1, 0], // Valid case
+            [null, 1], // Missing price
         ];
     }
 }

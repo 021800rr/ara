@@ -1,3 +1,9 @@
+I decided to write it from scratch.  
+The superiority of API Platform and Swagger, etc., is clear.  
+Unnecessary inclusion of queues working between local tables only adds extra load.  
+In the spirit of 'enjoying a splendidly idle afternoon': I have just written two projects in API. 
+From one (June 24), I can fetch Users. From the other (July 24), Products (requiring only light refactoring).
+
 ## install
 
 ```shell
@@ -28,7 +34,7 @@ docker exec -it ara-php-dev bash
 
 docker exec -it ara-postgres-dev bash 
     psql -U postgres -d postgres
-        create database cf_dev_test;
+        create database ara_dev_test;
         
 docker exec -it ara-php-dev bash
     cd /var/www/
