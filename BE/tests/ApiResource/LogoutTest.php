@@ -3,20 +3,18 @@
 namespace App\Tests\ApiResource;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use App\Config\UserStatus;
 use App\Entity\User;
 use App\Tests\SetUpTrait;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class LogoutTest extends ApiTestCase
 {
     use SetUpTrait;
 
-    private const string LOGOUT_URL = '/api/logout';
     private const array HEADERS = ['Content-Type' => 'application/ld+json'];
+    private const string HYDRA_DESCRIPTION = 'hydra:description';
+    private const string LOGOUT_URL = '/api/logout';
     private const string LOGIN_EMAIL = 'not_exist@example.com';
     private const string LOGIN_PASSWORD = 'plain';
-    private const string HYDRA_DESCRIPTION = 'hydra:description';
 
     private string $token;
 

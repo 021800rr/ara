@@ -5,6 +5,7 @@ namespace App\Tests;
 use App\Config\UserStatus;
 use App\Entity\RefreshToken;
 use App\Entity\User;
+use App\Repository\CartRepository;
 use App\Repository\ProductRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,6 +19,7 @@ trait SetUpTrait
     private UserRepository $userRepository;
     private RefreshTokenRepository $refreshTokenRepository;
     private ProductRepository $productRepository;
+    private CartRepository $cartRepository;
     private ValidatorInterface $validator;
 
     private function createUser(string $email, string $password, string $role): void
@@ -55,6 +57,7 @@ trait SetUpTrait
         $this->userRepository = $this->getUserRepository();
         $this->refreshTokenRepository = $this->getRefreshTokenRepository();
         $this->productRepository = $this->getProductRepository();
+        $this->cartRepository = $this->getCartRepository();
     }
 
     private function setUpValidator(): void
@@ -92,5 +95,13 @@ trait SetUpTrait
         $productRepository = static::getContainer()->get(ProductRepository::class);
 
         return $productRepository;
+    }
+
+    private function getCartRepository(): CartRepository
+    {
+        /** @var CartRepository $cartRepository */
+        $cartRepository = static::getContainer()->get(CartRepository::class);
+
+        return $cartRepository;
     }
 }

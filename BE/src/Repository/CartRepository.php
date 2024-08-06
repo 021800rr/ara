@@ -2,19 +2,19 @@
 
 namespace App\Repository;
 
-use App\Entity\Product;
+use App\Entity\Cart;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Product>
+ * @extends ServiceEntityRepository<Cart>
  */
-class ProductRepository extends ServiceEntityRepository
+class CartRepository extends ServiceEntityRepository
 {
     use SaveRemoveTrait;
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Product::class);
+        parent::__construct($registry, Cart::class);
     }
 }

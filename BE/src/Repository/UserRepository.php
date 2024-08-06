@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-    use EntitySaveTrait;
+    use SaveRemoveTrait;
 
     public function __construct(ManagerRegistry $registry)
     {

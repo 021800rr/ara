@@ -18,11 +18,7 @@ class RefreshTokenTest extends ApiTestCase
 
     private const string LOGIN_URL = '/api/login/check';
     private const string REFRESH_URL = '/api/token/refresh';
-    private const array HEADERS = [
-        'accept' => 'application/ld+json',
-        'Content-Type' => 'application/ld+json',
-    ];
-
+    private const array HEADERS = ['Content-Type' => 'application/ld+json'];
     private const string LOGIN_EMAIL = 'admin@example.com';
     private const string LOGIN_PASSWORD = 'test';
 
