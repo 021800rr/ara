@@ -18,10 +18,22 @@ class ProductFixtures extends Fixture
         $product2 = new Product();
         $product2->setName('Product 2');
         $product2->setDescription('Description for product 2');
-        $product2->setPrice(17.1);
+        $product2->setPrice(22.2);
+
+        $product3 = new Product();
+        $product3->setName('Product 3');
+        $product3->setDescription('Description for product 3');
+        $product3->setPrice(30);
+
+        $product4 = new Product();
+        $product4->setName('Product 4');
+        $product4->setDescription('Description for product 4');
+        $product4->setPrice(44.44);
 
         $manager->persist($product1);
         $manager->persist($product2);
+        $manager->persist($product3);
+        $manager->persist($product4);
 
         $manager->flush();
     }
