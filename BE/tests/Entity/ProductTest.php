@@ -165,4 +165,35 @@ class ProductTest extends ApiTestCase
 
         $this->assertResponseStatusCodeSame(204);
     }
+
+    /**
+     * @param string[] $expectedNames
+     */
+    #[DataProvider('paginationProvider')]
+    public function testProductPagination(int $page, int $expectedCount, array $expectedNames): void
+    {
+        $response = self::createClient()->request('GET', self::PRODUCTS_URL . '?page=' . $page, [
+            'auth_bearer' => $this->userToken,
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $products = $response->toArray()['hydra:member'];
+        $this->assertCount($expectedCount, $products);
+
+        foreach ($expectedNames as $index => $expectedName) {
+            $this->assertEquals($expectedName, $products[$index]['name']);
+        }
+    }
+
+    /**
+     * @return array<int, array{0: int, 1: int, 2: string[]}>
+     */
+    public static function paginationProvider(): array
+    {
+        return [
+            [1, 3, ['Product 1', 'Product 2', 'Product 3']], // First page
+            [2, 1, ['Product 4']], // Second page
+            [3, 0, []], // Third page
+        ];
+    }
 }

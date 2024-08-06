@@ -29,6 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new GetCollection(
             uriTemplate: '/products',
+            paginationItemsPerPage: 3,
             normalizationContext: ['groups' => ['product:read']],
             security: 'is_granted("' . User::ROLE_USER . '")',
         ),
