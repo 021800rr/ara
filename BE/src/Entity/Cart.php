@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\State\CartProcessor;
 use DateTime;
 use DateTimeImmutable;
@@ -16,7 +17,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CartRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
 #[ApiResource(
@@ -34,14 +36,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
             denormalizationContext: ['groups' => ['cart:write']],
             processor: CartProcessor::class,
         ),
-//        new Put(
-//            uriTemplate: '/carts/{id}',
-//            denormalizationContext: ['groups' => ['cart:write']],
-//            security: 'is_granted("ROLE_USER")',
-//        ),
+        new Put(
+            uriTemplate: '/carts/{id}',
+            denormalizationContext: ['groups' => ['cart:write']],
+            security: 'is_granted("ROLE_USER") and object.getUser() == user',
+            processor: CartProcessor::class,
+        ),
 //        new Delete(
 //            uriTemplate: '/carts/{id}',
-//            security: 'is_granted("ROLE_USER")',
+//            security: 'is_granted("ROLE_USER") and object.getUser() == user',
 //        )
     ],
     security: 'is_granted("' . User::ROLE_USER . '")'
@@ -57,22 +60,32 @@ class Cart
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['cart:read'/*, 'cart:write'*/])]
+    #[Groups(['cart:read'])]
     private ?User $user = null;
 
     /**
      * @var Collection<int, CartItem>
      */
-    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: "cart", cascade: ["persist", "remove"])]
+    #[ORM\OneToMany(
+        targetEntity: CartItem::class,
+        mappedBy: "cart",
+        cascade: ["persist", "remove"],
+        orphanRemoval: true
+    )
+    ]
     #[Groups(['cart:read', 'cart:write'])]
+    #[Assert\Type(Collection::class)]
     private Collection $items;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups(['cart:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Type(DateTimeImmutable::class)]
     private DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(['cart:read'])]
+    #[Assert\Type(DateTime::class)]
     private ?DateTime $updatedAt = null;
 
     public function __construct()
@@ -118,12 +131,19 @@ class Cart
 
     public function removeItem(CartItem $item): self
     {
-        if ($this->items->removeElement($item)) {
-            // set the owning side to null (unless already changed)
-            if ($item->getCart() === $this) {
-                $item->setCart(null);
-            }
+        if ($this->items->contains($item)) {
+            $this->items->removeElement($item);
+            // The $item will be automatically removed from the database
+            // due to the orphanRemoval=true setting in the @OneToMany annotation.
         }
+
+
+        //        if ($this->items->removeElement($item)) {
+        //             set the owning side to null (unless already changed)
+        //            if ($item->getCart() === $this) {
+        //                $item->setCart(null);
+        //            }
+        //        }
 
         return $this;
     }

@@ -12,13 +12,16 @@ class CartFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $cart = new Cart();
-
         /** @var User $user */
         $user = $this->getReference(UserFixtures::USER);
-        $cart->setUser($user);
 
-        $manager->persist($cart);
+        $cart1 = new Cart();
+        $cart1->setUser($user);
+        $manager->persist($cart1);
+
+        $cart2 = new Cart();
+        $cart2->setUser($user);
+        $manager->persist($cart2);
 
         $manager->flush();
     }

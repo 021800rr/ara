@@ -2,8 +2,8 @@
 
 namespace App\Tests\State;
 
-use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Entity\Cart;
 use App\Entity\User;
 use App\Repository\CartRepository;
@@ -12,22 +12,24 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CartProcessorTest extends TestCase
 {
     private CartProcessor $cartProcessor;
 
-    /** @var CartRepository&MockObject $cartRepository */
+    /** @var CartRepository&MockObject */
     private CartRepository $cartRepository;
 
-    /** @var Security&MockObject $security */
+    /** @var Security&MockObject */
     private Security $security;
 
     protected function setUp(): void
     {
         $this->cartRepository = $this->createMock(CartRepository::class);
         $this->security = $this->createMock(Security::class);
-        $this->cartProcessor = new CartProcessor($this->cartRepository, $this->security);
+        $validator = $this->createMock(ValidatorInterface::class);
+        $this->cartProcessor = new CartProcessor($this->cartRepository, $this->security, $validator);
     }
 
     public function testProcessCreatesCart(): void
@@ -52,21 +54,26 @@ class CartProcessorTest extends TestCase
         $this->expectExceptionMessage('User must be logged in to create a cart.');
 
         $operation = new Post();
-        // @phpstan-ignore-next-line
-        $this->cartProcessor->process(null, $operation);
+        $this->cartProcessor->process(new Cart(), $operation);
     }
 
-    public function testProcessThrowsExceptionWhenCartNotCreated(): void
+    public function testProcessUpdatesCart(): void
     {
         $user = $this->createMock(User::class);
         $this->security->method('getUser')->willReturn($user);
 
-        $operation = $this->createMock(Operation::class);
+        $existingCart = new Cart();
+        $existingCart->setUser($user);
 
-        $this->expectException(HttpException::class);
-        $this->expectExceptionMessage('The system did not create a cart.');
+        $this->cartRepository->method('findOneBy')->willReturn($existingCart);
+        $this->cartRepository->expects($this->once())->method('save');
 
-        // @phpstan-ignore-next-line
-        $this->cartProcessor->process(null, $operation);
+        $operation = new Put();
+        $cartData = new Cart();
+        $updatedCart = $this->cartProcessor->process($cartData, $operation, ['id' => 1]);
+
+        $this->assertInstanceOf(Cart::class, $updatedCart);
+        $this->assertSame($user, $updatedCart->getUser());
+        $this->assertCount(0, $updatedCart->getItems());
     }
 }

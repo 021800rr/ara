@@ -1,6 +1,6 @@
 parameters:
     jwt_token_ttl: '%env(JWT_TOKEN_TTL)%'
-    available_currencies: '%env(csv:AVAILABLE_CURRENCIES)%'
+    cart_item_limit: '%env(int:CART_ITEM_LIMIT)%'
 
 services:
     _defaults:

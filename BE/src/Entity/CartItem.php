@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use App\Validator\Constraints\CartItemCount;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CartItemRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CartItemRepository::class)]
 class CartItem
@@ -19,19 +21,30 @@ class CartItem
     #[ORM\ManyToOne(targetEntity: Product::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['cart:read', 'cart:write'])]
+    #[Assert\NotNull]
+    #[Assert\Type(Product::class)]
     private ?Product $product = null;
 
     #[ORM\ManyToOne(targetEntity: Cart::class, inversedBy: "items")]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
+    #[Assert\Type(Cart::class)]
+    #[CartItemCount]
     private ?Cart $cart = null;
 
     #[ORM\Column(type: Types::INTEGER)]
     #[Groups(['cart:read', 'cart:write'])]
-    private int $quantity;
+    #[Assert\NotBlank]
+    #[Assert\Positive]
+    #[Assert\Type(Types::INTEGER)]
+    private ?int $quantity;
 
     #[ORM\Column(type: Types::FLOAT)]
     #[Groups(['cart:read'])]
-    private float $price;
+    #[Assert\NotBlank]
+    #[Assert\Type('numeric')]
+    #[Assert\Positive]
+    private null|float|int $price;
 
     public function getId(): ?int
     {
@@ -62,24 +75,24 @@ class CartItem
         return $this;
     }
 
-    public function getQuantity(): int
+    public function getQuantity(): ?int
     {
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): self
+    public function setQuantity(?int $quantity): self
     {
         $this->quantity = $quantity;
 
         return $this;
     }
 
-    public function getPrice(): float
+    public function getPrice(): null|float|int
     {
         return $this->price;
     }
 
-    public function setPrice(float $price): self
+    public function setPrice(null|float|int $price): self
     {
         $this->price = $price;
 
