@@ -78,6 +78,7 @@ class Product
     #[ORM\Column(type: Types::FLOAT)]
     #[Assert\NotBlank]
     #[Assert\Type('numeric')]
+    #[Assert\Positive]
     #[Groups(['product:read', 'product:write'])]
     private null|float|int $price;
 

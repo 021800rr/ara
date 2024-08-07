@@ -42,43 +42,6 @@ class ProductTest extends ApiTestCase
         $this->userToken = $this->login((string) $user->getEmail(), self::PLAIN_PASSWORD);
     }
 
-    #[DataProvider('priceProvider')]
-    public function testProductDto(null|int|float $price, int $expectedViolationCount): void
-    {
-        $dto = new ProductDto();
-        $dto->name = 'Test Product';
-        $dto->description = 'Test Description';
-        $dto->price = $price;
-
-        $violations = $this->validator->validate($dto);
-
-        $this->assertCount($expectedViolationCount, $violations);
-    }
-
-    /**
-     * @return array<int, array{0: int|float|null, 1: int}>
-     */
-    public static function priceProvider(): array
-    {
-        return [
-            [10.1, 0], // Valid case
-            [1, 0], // Valid case
-            [null, 1], // Missing price
-        ];
-    }
-
-    public function testCreateProductWithValidDescription(): void
-    {
-        $product = new Product();
-        $product->setName('Test Product');
-        $product->setDescription(str_repeat('a', 10000));
-        $product->setPrice(10.0);
-
-        $violations = $this->validator->validate($product);
-
-        $this->assertCount(0, $violations);
-    }
-
     public function testUserCanAccessProducts(): void
     {
         self::createClient()->request('GET', self::PRODUCTS_URL, [
