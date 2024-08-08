@@ -1,8 +1,15 @@
-I decided to write it from scratch.  
-The superiority of API Platform and Swagger, etc., is clear.  
-Unnecessary inclusion of queues working between local tables only adds extra load.  
-In the spirit of 'enjoying a splendidly idle afternoon': I have just written two projects in API. 
-From one (June 24), I can fetch Users. From the other (July 24), Products (requiring only light refactoring).
+Rzuciłem okiem na oryginalny kod.  
+Postanowiłem napisać go od podstaw.  
+Wyższość API Platform i Swagger itd. jest oczywista.  
+Niepotrzebne włączanie kolejek działających między tabelami lokalnymi tylko dodaje dodatkowego obciążenia.  
+Dwa kawałki kodu miałem już gotowe: właśnie napisałem dwa projekty w API.  
+Z pierwszego (4 czerwca) pobierałem użytkowników (sporo oryginalnego kodu wyleciało). 
+Z drugiego (21 lipca) pobrałem produkty (tu za wiele już się nie zmieniło).  
+  
+Dorobiłem koszyk.  
+Zrealizowałem oryginalne założenia.  
+Dołożyłem sortowanie produktów.  
+Sprawdziłem, czy nie pojawiają się raportowane wcześniej błędy.  
 
 ## install
 
@@ -71,8 +78,6 @@ docker exec -it ara-php-dev bash
 cd ara
 docker compose --file docker/docker-compose.yml --env-file BE/.env up -d
 ```
-
-api: http://localhost/api  
 
 ## how to reset 
 
