@@ -18,20 +18,10 @@ class RefreshTokenTest extends ApiTestCase
 
     private const string LOGIN_URL = '/api/login/check';
     private const string REFRESH_URL = '/api/token/refresh';
-    private const array HEADERS = ['Content-Type' => 'application/ld+json'];
-    private const string LOGIN_EMAIL = 'admin@example.com';
-    private const string LOGIN_PASSWORD = 'test';
 
-    /**
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     */
     public function testRefreshToken(): void
     {
-        $tokens = $this->loginAndGetTokens(self::LOGIN_EMAIL, self::LOGIN_PASSWORD);
+        $tokens = $this->loginAndGetTokens(self::ADMIN_MAIL, self::PLAIN_PASSWORD);
         $response = $this->refreshToken($tokens['refresh_token']);
         $this->assertResponseIsSuccessful();
 
@@ -51,19 +41,12 @@ class RefreshTokenTest extends ApiTestCase
          */
         $jwtPayload = $this->decodeJwt($newTokens['token']);
 
-        $this->assertSame(self::LOGIN_EMAIL, $jwtPayload->username);
+        $this->assertSame(self::ADMIN_MAIL, $jwtPayload->username);
         $this->assertSame([User::ROLE_ADMIN, User::ROLE_USER], $jwtPayload->roles);
     }
 
     /**
-     * @param string $username
-     * @param string $password
      * @return array<string, string>
-     * @throws ClientExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     private function loginAndGetTokens(string $username, string $password): array
     {

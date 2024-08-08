@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Repository\CartRepository;
 use App\State\CartProcessor;
 use DateTime;
 use DateTimeImmutable;
@@ -16,7 +17,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\CartRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -39,13 +39,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Put(
             uriTemplate: '/carts/{id}',
             denormalizationContext: ['groups' => ['cart:write']],
-            security: 'is_granted("ROLE_USER") and object.getUser() == user',
+            security: 'is_granted("' . User::ROLE_USER . '") and object.getUser() == user',
             processor: CartProcessor::class,
         ),
-//        new Delete(
-//            uriTemplate: '/carts/{id}',
-//            security: 'is_granted("ROLE_USER") and object.getUser() == user',
-//        )
     ],
     security: 'is_granted("' . User::ROLE_USER . '")'
 )]
@@ -71,8 +67,7 @@ class Cart
         mappedBy: "cart",
         cascade: ["persist", "remove"],
         orphanRemoval: true
-    )
-    ]
+    )]
     #[Groups(['cart:read', 'cart:write'])]
     #[Assert\Type(Collection::class)]
     private Collection $items;
@@ -133,17 +128,7 @@ class Cart
     {
         if ($this->items->contains($item)) {
             $this->items->removeElement($item);
-            // The $item will be automatically removed from the database
-            // due to the orphanRemoval=true setting in the @OneToMany annotation.
         }
-
-
-        //        if ($this->items->removeElement($item)) {
-        //             set the owning side to null (unless already changed)
-        //            if ($item->getCart() === $this) {
-        //                $item->setCart(null);
-        //            }
-        //        }
 
         return $this;
     }

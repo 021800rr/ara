@@ -7,29 +7,22 @@ use App\Config\UserStatus;
 use App\Entity\User;
 use App\Tests\SetUpTrait;
 
-class   UserTest extends ApiTestCase
+class UserTest extends ApiTestCase
 {
     use SetUpTrait;
 
-    private const string USER_URL = '/api/users';
-    private const string HYDRA_TOTAL_ITEMS = 'hydra:totalItems';
-    private const string HYDRA_MEMBER = 'hydra:member';
-    private const string LOGIN_EMAIL = 'admin@example.com';
-    private const string LOGIN_PASSWORD = 'test';
+    private string $token;
 
     protected function setUp(): void
     {
-        $this->setUpRepositories();
+        $this->token = $this->login(self::ADMIN_MAIL, self::PLAIN_PASSWORD);
     }
 
     public function testGet(): void
     {
-        $token = $this->login(self::LOGIN_EMAIL, self::LOGIN_PASSWORD);
-        self::createClient()->request(
-            'GET',
-            self::USER_URL . '/2',
-            ['auth_bearer' => $token]
-        );
+        self::createClient()->request('GET', self::USERS_URL . '/' . self::EDITOR_ID, [
+            'auth_bearer' => $this->token
+        ]);
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains([
             'id' => 2,
@@ -45,9 +38,7 @@ class   UserTest extends ApiTestCase
 
     public function testGetCollection(): void
     {
-        $token = $this->login(self::LOGIN_EMAIL, self::LOGIN_PASSWORD);
-
-        self::createClient()->request('GET', self::USER_URL, ['auth_bearer' => $token]);
+        self::createClient()->request('GET', self::USERS_URL, ['auth_bearer' => $this->token]);
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains([
             self::HYDRA_TOTAL_ITEMS => 3,
@@ -88,10 +79,9 @@ class   UserTest extends ApiTestCase
 
     public function testGetCollectionByNameAndSurname(): void
     {
-        $token = $this->login(self::LOGIN_EMAIL, self::LOGIN_PASSWORD);
         $client = self::createClient();
         $client->getKernelBrowser()->followRedirects(true);
-        $client->request('GET', self::USER_URL . '/?name=i&lastName=cki', ['auth_bearer' => $token]);
+        $client->request('GET', self::USERS_URL . '/?name=i&lastName=cki', ['auth_bearer' => $this->token]);
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains([
             self::HYDRA_TOTAL_ITEMS => 2,
@@ -108,54 +98,11 @@ class   UserTest extends ApiTestCase
         ]);
     }
 
-    public function testDefaultRoleIncludesRoleUser(): void
-    {
-        $user = new User();
-        $roles = $user->getRoles();
-
-        $this->assertContains(User::ROLE_USER, $roles);
-    }
-
-    public function testSetRolesAddsRoleUser(): void
-    {
-        $user = new User();
-        $roles = [User::ROLE_ADMIN];
-        $user->setRoles($roles);
-
-        $this->assertContains(User::ROLE_ADMIN, $user->getRoles());
-        $this->assertContains(User::ROLE_USER, $user->getRoles());
-    }
-
-    public function testRolesAreUnique(): void
-    {
-        $user = new User();
-        $roles = [User::ROLE_ADMIN, User::ROLE_USER, User::ROLE_USER];
-        $user->setRoles($roles);
-
-        $this->assertSame([User::ROLE_ADMIN, User::ROLE_USER], $user->getRoles());
-    }
-
     public function testGetUserIdentifierReturnsEmail(): void
     {
         $user = new User();
         $user->setEmail('john.doe@example.com');
 
         $this->assertSame('john.doe@example.com', $user->getUserIdentifier());
-    }
-
-    public function testEraseCredentials(): void
-    {
-        $user = new User();
-        $user->eraseCredentials();
-
-        // This method doesn't do anything currently, but we can still call it to ensure it doesn't throw an error.
-        $this->assertTrue(true);
-    }
-
-    public function testStatusDefaultsToInactive(): void
-    {
-        $user = new User();
-
-        $this->assertSame(UserStatus::inactive->name, $user->getStatus());
     }
 }

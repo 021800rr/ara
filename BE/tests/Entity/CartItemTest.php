@@ -15,65 +15,54 @@ class CartItemTest extends ApiTestCase
     protected function setUp(): void
     {
         $this->setUpValidator();
+        $this->setUpRepositories();
+
+        /** @var Product $product */
+        $product = $this->productRepository->find(self::PRODUCT_ID_1);
+        $this->product = $product;
+
+        $this->cart = new Cart();
+        $this->cartItem = new CartItem();
     }
 
     public function testValidCartItem(): void
     {
-        $product = new Product();
-        $product->setName('Product 1');
-        $product->setPrice(10.0);
+        $this->cartItem->setProduct($this->product);
+        $this->cartItem->setCart($this->cart);
+        $this->cartItem->setQuantity(2);
+        $this->cartItem->setPrice($this->product->getPrice());
 
-        $cart = new Cart();
-        $cartItem = new CartItem();
-        $cartItem->setProduct($product);
-        $cartItem->setCart($cart);
-        $cartItem->setQuantity(2);
-        $cartItem->setPrice(10.0);
-
-        $errors = $this->validator->validate($cartItem);
+        $errors = $this->validator->validate($this->cartItem);
         $this->assertCount(0, $errors);
     }
 
     public function testInvalidCartItem(): void
     {
-        $cartItem = new CartItem();
         // Missing product, cart, quantity, and price
 
-        $errors = $this->validator->validate($cartItem);
+        $errors = $this->validator->validate($this->cartItem);
         $this->assertGreaterThan(0, count($errors));
     }
 
     public function testInvalidQuantity(): void
     {
-        $product = new Product();
-        $product->setName('Product 1');
-        $product->setPrice(10.0);
+        $this->cartItem->setProduct($this->product);
+        $this->cartItem->setCart($this->cart);
+        $this->cartItem->setQuantity(-1); // Invalid quantity
+        $this->cartItem->setPrice($this->product->getPrice());
 
-        $cart = new Cart();
-        $cartItem = new CartItem();
-        $cartItem->setProduct($product);
-        $cartItem->setCart($cart);
-        $cartItem->setQuantity(-1); // Invalid quantity
-        $cartItem->setPrice(10.0);
-
-        $errors = $this->validator->validate($cartItem);
+        $errors = $this->validator->validate($this->cartItem);
         $this->assertGreaterThan(0, count($errors));
     }
 
     public function testInvalidPrice(): void
     {
-        $product = new Product();
-        $product->setName('Product 1');
-        $product->setPrice(10.0);
+        $this->cartItem->setProduct($this->product);
+        $this->cartItem->setCart($this->cart);
+        $this->cartItem->setQuantity(2);
+        $this->cartItem->setPrice(-5.0); // Invalid price
 
-        $cart = new Cart();
-        $cartItem = new CartItem();
-        $cartItem->setProduct($product);
-        $cartItem->setCart($cart);
-        $cartItem->setQuantity(2);
-        $cartItem->setPrice(-5.0); // Invalid price
-
-        $errors = $this->validator->validate($cartItem);
+        $errors = $this->validator->validate($this->cartItem);
         $this->assertGreaterThan(0, count($errors));
     }
 }

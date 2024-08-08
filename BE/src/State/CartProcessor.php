@@ -32,8 +32,15 @@ final readonly class CartProcessor implements ProcessorInterface
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Cart
-    {
+    /**
+     * {@inheritDoc}
+     */
+    #[\Override] public function process(
+        mixed $data,
+        Operation $operation,
+        array $uriVariables = [],
+        array $context = []
+    ): Cart {
         if (!$data instanceof Cart) {
             throw new UnexpectedTypeException($data, Cart::class);
         }

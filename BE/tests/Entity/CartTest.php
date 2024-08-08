@@ -12,15 +12,6 @@ class CartTest extends ApiTestCase
 {
     use SetUpTrait;
 
-    private const array HEADERS = ['Content-Type' => 'application/ld+json'];
-    private const string USER_MAIL = 'user@example.com';
-    private const string ADMIN_MAIL = 'admin@example.com';
-    private const string PLAIN_PASSWORD = 'test';
-    private const int USER_ID = 3;
-    private const string CARTS_URL = '/api/carts';
-    private const string USERS_URL = '/api/users/';
-    private const string PRODUCTS_URL = '/api/products/';
-
     protected function setUp(): void
     {
         $this->setUpRepositories();
@@ -30,7 +21,7 @@ class CartTest extends ApiTestCase
     {
         $token = $this->login(self::USER_MAIL, self::PLAIN_PASSWORD);
 
-        $response = static::createClient()->request('GET', self::CARTS_URL . '/1', [
+        $response = static::createClient()->request('GET', self::CARTS_URL . '/' . self::CART_ID, [
             'auth_bearer' => $token,
             'headers' => self::HEADERS,
         ]);
@@ -39,15 +30,15 @@ class CartTest extends ApiTestCase
 
         /** @var object{id: int, user: string} $cart */
         $cart = json_decode($response->getContent());
-        $this->assertSame(1, $cart->id);
-        $this->assertSame(self::USERS_URL . self::USER_ID, $cart->user);
+        $this->assertSame(self::CART_ID, $cart->id);
+        $this->assertSame(self::USERS_URL . '/' . self::USER_ID, $cart->user);
     }
 
     public function testGetNotFound(): void
     {
         $token = $this->login(self::ADMIN_MAIL, self::PLAIN_PASSWORD);
 
-        static::createClient()->request('GET', self::CARTS_URL . '/1', [
+        static::createClient()->request('GET', self::CARTS_URL . '/' . self::CART_ID, [
             'auth_bearer' => $token,
             'headers' => self::HEADERS,
         ]);
@@ -68,7 +59,7 @@ class CartTest extends ApiTestCase
 
         /** @var array<"hydra:member", array<int, mixed>> $carts */
         $carts = json_decode($response->getContent(), true);
-        $this->assertCount(2, $carts['hydra:member']);
+        $this->assertCount(2, $carts[self::HYDRA_MEMBER]);
     }
 
     public function testPost(): void
@@ -88,7 +79,7 @@ class CartTest extends ApiTestCase
         /** @var object{id: int, user: string, createdAt: string} $cart */
         $cart = json_decode($response->getContent());
 
-        $this->assertSame(self::USERS_URL . self::USER_ID, $cart->user);
+        $this->assertSame(self::USERS_URL . '/' . self::USER_ID, $cart->user);
         $this->assertGreaterThanOrEqual($now->format(DateTime::ATOM), $cart->createdAt);
     }
 
@@ -97,19 +88,19 @@ class CartTest extends ApiTestCase
         $token = $this->login(self::USER_MAIL, self::PLAIN_PASSWORD);
 
         $data = [
-            "items" => [
+            'items' => [
                 [
-                    "product" => self::PRODUCTS_URL . "1",
-                    "quantity" => 1
+                    'product' => self::PRODUCTS_URL . '/' . self::PRODUCT_ID_2,
+                    'quantity' => 1
                 ],
                 [
-                    "product" => self::PRODUCTS_URL . "2",
-                    "quantity" => 2
-                ]
+                    'product' => self::PRODUCTS_URL . '/' . self::PRODUCT_ID_1,
+                    'quantity' => 2
+                ],
             ]
         ];
 
-        static::createClient()->request('PUT', self::CARTS_URL . '/1', [
+        static::createClient()->request('PUT', self::CARTS_URL . '/' . self::CART_ID, [
             'auth_bearer' => $token,
             'headers' => self::HEADERS,
             'json' => $data,
@@ -118,14 +109,19 @@ class CartTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(200);
 
         /** @var Cart $cart */
-        $cart = $this->cartRepository->find(1);
+        $cart = $this->cartRepository->find(self::CART_ID);
         $items = $cart->getItems();
 
         $this->assertCount(2, $items);
 
+        /** @var Product $product1 */
+        $product1 = $this->productRepository->find(self::PRODUCT_ID_1);
+        /** @var Product $product2 */
+        $product2 = $this->productRepository->find(self::PRODUCT_ID_2);
+
         $expectedItems = [
-            ['name' => 'Product 1', 'price' => 10, 'quantity' => 1],
-            ['name' => 'Product 2', 'price' => 22.2, 'quantity' => 2],
+            ['name' => $product2->getName(), 'price' => $product2->getPrice(), 'quantity' => 1],
+            ['name' => $product1->getName(), 'price' => $product1->getPrice(), 'quantity' => 2],
         ];
 
         foreach ($items as $index => $item) {
@@ -141,11 +137,11 @@ class CartTest extends ApiTestCase
     {
         $token = $this->login(self::ADMIN_MAIL, self::PLAIN_PASSWORD);
 
-        $response = static::createClient()->request('PUT', self::CARTS_URL . '/1', [
+        static::createClient()->request('PUT', self::CARTS_URL . '/' . self::CART_ID, [
             'auth_bearer' => $token,
             'headers' => self::HEADERS,
             'json' => [
-                "product" => self::PRODUCTS_URL . 1,
+                "product" => self::PRODUCTS_URL . '/' . self::PRODUCT_ID_1,
                 "quantity" => 1,
             ]
         ]);

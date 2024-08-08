@@ -4,3 +4,8 @@ parameters:
         - src/
         - tests/
     treatPhpDocTypesAsCertain: false
+services:
+	-
+		class: App\PHPStan\MyAlwaysUsedClassConstantsExtension
+		tags:
+			- phpstan.constants.alwaysUsedClassConstantsExtension

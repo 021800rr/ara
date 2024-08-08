@@ -27,17 +27,17 @@ class CartItemCountValidatorTest extends ConstraintValidatorTestCase
     public function testValidCartItemCount(): void
     {
         $cart = new Cart();
+
         $cartItem1 = new CartItem();
         $cartItem1->setQuantity(2);
+
         $cartItem2 = new CartItem();
         $cartItem2->setQuantity(3);
 
         $cart->addItem($cartItem1);
         $cart->addItem($cartItem2);
 
-        $constraint = new CartItemCount();
-
-        $this->validator->validate($cart, $constraint);
+        $this->validator->validate($cart, new CartItemCount());
 
         $this->assertNoViolation();
     }
@@ -45,17 +45,19 @@ class CartItemCountValidatorTest extends ConstraintValidatorTestCase
     public function testInvalidCartItemCount(): void
     {
         $cart = new Cart();
+
         $cartItem1 = new CartItem();
         $cartItem1->setQuantity(3);
+
         $cartItem2 = new CartItem();
         $cartItem2->setQuantity(4);
 
         $cart->addItem($cartItem1);
         $cart->addItem($cartItem2);
 
-        $constraint = new CartItemCount(['message' => 'You cannot add more than {{ limit }} items to the cart.']);
+        $cartItemCount = new CartItemCount(['message' => 'You cannot add more than {{ limit }} items to the cart.']);
 
-        $this->validator->validate($cart, $constraint);
+        $this->validator->validate($cart, $cartItemCount);
 
         $this->buildViolation('You cannot add more than {{ limit }} items to the cart.')
             ->setParameter('{{ limit }}', (string) self::CART_ITEM_LIMIT)
@@ -64,9 +66,7 @@ class CartItemCountValidatorTest extends ConstraintValidatorTestCase
 
     public function testNullValue(): void
     {
-        $constraint = new CartItemCount();
-
-        $this->validator->validate(null, $constraint);
+        $this->validator->validate(null, new CartItemCount());
 
         $this->assertNoViolation();
     }
@@ -75,18 +75,15 @@ class CartItemCountValidatorTest extends ConstraintValidatorTestCase
     {
         $this->expectException(UnexpectedValueException::class);
 
-        $constraint = new CartItemCount();
-
-        $this->validator->validate('invalid_value', $constraint);
+        $this->validator->validate('invalid_value', new CartItemCount());
     }
 
     public function testUnexpectedType(): void
     {
         $this->expectException(UnexpectedTypeException::class);
 
-        $value = new Cart();
         $constraint = $this->createMock(Constraint::class);
 
-        $this->validator->validate($value, $constraint);
+        $this->validator->validate(new Cart(), $constraint);
     }
 }

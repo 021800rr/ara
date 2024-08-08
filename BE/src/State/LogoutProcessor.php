@@ -8,7 +8,6 @@ use App\Dto\TokenDto;
 use App\Entity\RefreshToken;
 use Doctrine\ORM\EntityManagerInterface;
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
-use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -31,11 +30,14 @@ final readonly class LogoutProcessor implements ProcessorInterface
     }
 
     /**
-     * @param TokenDto $data
-     * @throws InvalidArgumentException
+     * {@inheritDoc}
      */
-    #[\Override] public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
-    {
+    #[\Override] public function process(
+        mixed $data,
+        Operation $operation,
+        array $uriVariables = [],
+        array $context = []
+    ): void {
         if (!$data instanceof TokenDto) {
             throw new \InvalidArgumentException('Expected instance of TokenDto');
         }

@@ -63,7 +63,10 @@ class CheckUserStatusListenerTest extends ApiTestCase
         $response = $event->getResponse();
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertEquals(['message' => 'User status is not active'], json_decode((string) $response->getContent(), true));
+        $this->assertEquals(
+            ['message' => 'User status is not active'],
+            json_decode((string) $response->getContent(), true)
+        );
     }
 
     public function testOnKernelRequestWithNoUser(): void

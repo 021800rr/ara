@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use App\State\ItemProcessor;
 use App\Validator\Constraints\CartItemCount;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,6 +13,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CartItemRepository::class)]
+#[ApiResource(
+    operations: [
+        new Delete(
+            uriTemplate: '/items/{id}',
+            security: 'is_granted("' . User::ROLE_USER . '") and object.getCart().getUser() == user',
+            processor: ItemProcessor::class,
+        ),
+    ],
+)]
 class CartItem
 {
     #[ORM\Id]
@@ -25,7 +37,7 @@ class CartItem
     #[Assert\Type(Product::class)]
     private ?Product $product = null;
 
-    #[ORM\ManyToOne(targetEntity: Cart::class, inversedBy: "items")]
+    #[ORM\ManyToOne(targetEntity: Cart::class, inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
     #[Assert\Type(Cart::class)]

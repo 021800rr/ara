@@ -23,13 +23,13 @@ class CartItemFixtures extends Fixture implements DependentFixtureInterface
         $cartItem1 = new CartItem();
         $cartItem1->setProduct($product1);
         $cartItem1->setCart($cart);
-        $cartItem1->setQuantity(2);
+        $cartItem1->setQuantity(1);
         $cartItem1->setPrice($product1->getPrice());
 
         $cartItem2 = new CartItem();
         $cartItem2->setProduct($product2);
         $cartItem2->setCart($cart);
-        $cartItem2->setQuantity(1);
+        $cartItem2->setQuantity(2);
         $cartItem2->setPrice($product2->getPrice());
 
         $manager->persist($cartItem1);

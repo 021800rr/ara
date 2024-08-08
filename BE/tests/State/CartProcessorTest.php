@@ -39,8 +39,7 @@ class CartProcessorTest extends TestCase
 
         $this->cartRepository->expects($this->once())->method('save');
 
-        $operation = new Post();
-        $cart = $this->cartProcessor->process(new Cart(), $operation);
+        $cart = $this->cartProcessor->process(new Cart(), new Post());
 
         $this->assertInstanceOf(Cart::class, $cart);
         $this->assertSame($user, $cart->getUser());
@@ -53,8 +52,7 @@ class CartProcessorTest extends TestCase
         $this->expectException(HttpException::class);
         $this->expectExceptionMessage('User must be logged in to create a cart.');
 
-        $operation = new Post();
-        $this->cartProcessor->process(new Cart(), $operation);
+        $this->cartProcessor->process(new Cart(), new Post());
     }
 
     public function testProcessUpdatesCart(): void
@@ -68,9 +66,7 @@ class CartProcessorTest extends TestCase
         $this->cartRepository->method('findOneBy')->willReturn($existingCart);
         $this->cartRepository->expects($this->once())->method('save');
 
-        $operation = new Put();
-        $cartData = new Cart();
-        $updatedCart = $this->cartProcessor->process($cartData, $operation, ['id' => 1]);
+        $updatedCart = $this->cartProcessor->process(new Cart(), new Put(), ['id' => 1]);
 
         $this->assertInstanceOf(Cart::class, $updatedCart);
         $this->assertSame($user, $updatedCart->getUser());

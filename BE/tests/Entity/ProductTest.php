@@ -13,8 +13,6 @@ class ProductTest extends ApiTestCase
 {
     use SetUpTrait;
 
-    private const string PRODUCTS_URL = '/api/products';
-    private const array HEADERS = ['Content-Type' => 'application/ld+json'];
     private const array NEW_PRODUCT = [
         'name' => 'New Product',
         'description' => 'Product Description',
@@ -25,21 +23,14 @@ class ProductTest extends ApiTestCase
         'description' => 'Updated Description',
         'price' => 110.1
     ];
-    private const string PLAIN_PASSWORD = 'test';
 
     private string $editorToken;
     private string $userToken;
 
     protected function setUp(): void
     {
-        $this->setUpRepositories();
-        $this->setUpValidator();
-        /** @var User $editor */
-        $editor = $this->userRepository->find(2);
-        /** @var User $user */
-        $user = $this->userRepository->find(3);
-        $this->editorToken = $this->login((string) $editor->getEmail(), self::PLAIN_PASSWORD);
-        $this->userToken = $this->login((string) $user->getEmail(), self::PLAIN_PASSWORD);
+        $this->editorToken = $this->login(self::EDITOR_MAIL, self::PLAIN_PASSWORD);
+        $this->userToken = $this->login(self::USER_MAIL, self::PLAIN_PASSWORD);
     }
 
     public function testUserCanAccessProducts(): void
@@ -75,7 +66,7 @@ class ProductTest extends ApiTestCase
 
     public function testUserCannotUpdateProduct(): void
     {
-        self::createClient()->request('PUT', self::PRODUCTS_URL . "/1", [
+        self::createClient()->request('PUT', self::PRODUCTS_URL . '/' . self::PRODUCT_ID_1, [
             'auth_bearer' => $this->userToken,
             'headers' => self::HEADERS,
             'json' => self::UPDATED_PRODUCT,
@@ -88,7 +79,7 @@ class ProductTest extends ApiTestCase
     {
         $client = self::createClient();
 
-        $client->request('PUT', self::PRODUCTS_URL . "/1", [
+        $client->request('PUT', self::PRODUCTS_URL . '/' . self::PRODUCT_ID_1, [
             'auth_bearer' => $this->editorToken,
             'headers' => self::HEADERS,
             'json' => self::UPDATED_PRODUCT,
@@ -97,7 +88,7 @@ class ProductTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(200);
 
         // Fetch the updated product to verify the changes
-        $response = $client->request('GET', self::PRODUCTS_URL . "/1", [
+        $response = $client->request('GET', self::PRODUCTS_URL . '/' . self::PRODUCT_ID_1, [
             'auth_bearer' => $this->editorToken,
             'headers' => self::HEADERS,
         ]);
@@ -113,7 +104,7 @@ class ProductTest extends ApiTestCase
 
     public function testUserCannotDeleteProduct(): void
     {
-        self::createClient()->request('DELETE', self::PRODUCTS_URL . "/1", [
+        self::createClient()->request('DELETE', self::PRODUCTS_URL . '/4', [
             'auth_bearer' => $this->userToken,
         ]);
 
@@ -122,7 +113,7 @@ class ProductTest extends ApiTestCase
 
     public function testEditorCanDeleteProduct(): void
     {
-        self::createClient()->request('DELETE', self::PRODUCTS_URL . "/4", [
+        self::createClient()->request('DELETE', self::PRODUCTS_URL . '/4', [
             'auth_bearer' => $this->editorToken,
         ]);
 
@@ -140,7 +131,7 @@ class ProductTest extends ApiTestCase
         ]);
 
         $this->assertResponseIsSuccessful();
-        $products = $response->toArray()['hydra:member'];
+        $products = $response->toArray()[self::HYDRA_MEMBER];
         $this->assertCount($expectedCount, $products);
 
         foreach ($expectedNames as $index => $expectedName) {

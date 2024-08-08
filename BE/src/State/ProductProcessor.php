@@ -19,8 +19,15 @@ final readonly class ProductProcessor implements ProcessorInterface
     {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
-    {
+    /**
+     * {@inheritDoc}
+     */
+    #[\Override] public function process(
+        mixed $data,
+        Operation $operation,
+        array $uriVariables = [],
+        array $context = []
+    ): void {
         if (!$data instanceof ProductDto) {
             throw new \InvalidArgumentException('Expected instance of ProductDto');
         }

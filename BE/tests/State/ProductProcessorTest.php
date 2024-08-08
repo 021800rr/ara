@@ -33,8 +33,6 @@ class ProductProcessorTest extends TestCase
         $productDto->description = 'Test Description';
         $productDto->price = 10.1;
 
-        $operation = new Post();
-
         $this->entityManager->expects($this->once())
             ->method('persist')
             ->with($this->callback(function ($product) use ($productDto) {
@@ -47,7 +45,7 @@ class ProductProcessorTest extends TestCase
         $this->entityManager->expects($this->once())
             ->method('flush');
 
-        $this->productProcessor->process($productDto, $operation);
+        $this->productProcessor->process($productDto, new Post());
     }
 
     public function testPutProcessValidProductDto(): void
@@ -57,7 +55,6 @@ class ProductProcessorTest extends TestCase
         $productDto->description = 'Updated Description';
         $productDto->price = 110.1;
 
-        $operation = new Put();
         $uriVariables = ['id' => 1];
 
         $existingProduct = new Product();
@@ -87,7 +84,7 @@ class ProductProcessorTest extends TestCase
         $this->entityManager->expects($this->once())
             ->method('flush');
 
-        $this->productProcessor->process($productDto, $operation, $uriVariables);
+        $this->productProcessor->process($productDto, new Put(), $uriVariables);
     }
 
     public function testPostProcessWithMissingPrice(): void
@@ -96,8 +93,6 @@ class ProductProcessorTest extends TestCase
         $productDto->name = 'Test Product';
         $productDto->description = 'Test Description';
         $productDto->price = null;
-
-        $operation = new Post();
 
         $this->entityManager->expects($this->once())
             ->method('persist')
@@ -111,7 +106,7 @@ class ProductProcessorTest extends TestCase
         $this->entityManager->expects($this->once())
             ->method('flush');
 
-        $this->productProcessor->process($productDto, $operation);
+        $this->productProcessor->process($productDto, new Post());
     }
 
     public function testProcessInvalidProductDto(): void
@@ -133,7 +128,6 @@ class ProductProcessorTest extends TestCase
         $productDto->description = 'Non Existent Description';
         $productDto->price = 110.1;
 
-        $operation = new Put();
         $uriVariables = ['id' => 999];
 
         $productRepository = $this->createMock(EntityRepository::class);
@@ -150,6 +144,6 @@ class ProductProcessorTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Product not found');
 
-        $this->productProcessor->process($productDto, $operation, $uriVariables);
+        $this->productProcessor->process($productDto, new Put(), $uriVariables);
     }
 }

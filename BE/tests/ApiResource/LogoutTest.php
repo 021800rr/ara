@@ -10,8 +10,6 @@ class LogoutTest extends ApiTestCase
 {
     use SetUpTrait;
 
-    private const array HEADERS = ['Content-Type' => 'application/ld+json'];
-    private const string HYDRA_DESCRIPTION = 'hydra:description';
     private const string LOGOUT_URL = '/api/logout';
     private const string LOGIN_EMAIL = 'not_exist@example.com';
     private const string LOGIN_PASSWORD = 'plain';
@@ -72,6 +70,12 @@ class LogoutTest extends ApiTestCase
 
     public function testInvalidateTokens(): void
     {
+        self::createClient()->request('GET', self::PRODUCTS_URL, [
+            'auth_bearer' => $this->token,
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
         $this->assertSame(1, $this->refreshTokenRepository->count());
         self::createClient()->request('POST', self::LOGOUT_URL, [
             'auth_bearer' => $this->token,
@@ -83,11 +87,10 @@ class LogoutTest extends ApiTestCase
         $this->assertSame(0, $this->refreshTokenRepository->count());
 
         // the token is blacklisted, no queries work
-        self::createClient()->request(
-            'GET',
-            '/api/users/1',
-            ['auth_bearer' => $this->token]
-        );
+        self::createClient()->request('GET', self::PRODUCTS_URL, [
+            'auth_bearer' => $this->token,
+        ]);
+
         $this->assertJsonContains([self::HYDRA_DESCRIPTION => 'JWT Token not found']);
         $this->assertResponseStatusCodeSame(401);
     }
