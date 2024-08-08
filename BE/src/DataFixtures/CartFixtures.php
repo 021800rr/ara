@@ -10,6 +10,8 @@ use Doctrine\Persistence\ObjectManager;
 
 class CartFixtures extends Fixture implements DependentFixtureInterface
 {
+    public const string CART = 'cart';
+
     public function load(ObjectManager $manager): void
     {
         /** @var User $user */
@@ -24,6 +26,8 @@ class CartFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($cart2);
 
         $manager->flush();
+
+        $this->addReference(self::CART, $cart1);
     }
 
     public function getDependencies(): array

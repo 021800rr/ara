@@ -8,6 +8,9 @@ use Doctrine\Persistence\ObjectManager;
 
 class ProductFixtures extends Fixture
 {
+    public const string PRODUCT_1 = 'product1';
+    public const string PRODUCT_2 = 'product2';
+
     public function load(ObjectManager $manager): void
     {
         $product1 = new Product();
@@ -36,5 +39,8 @@ class ProductFixtures extends Fixture
         $manager->persist($product4);
 
         $manager->flush();
+
+        $this->addReference(self::PRODUCT_1, $product1);
+        $this->addReference(self::PRODUCT_2, $product2);
     }
 }
