@@ -57,7 +57,7 @@ docker compose --file docker/docker-compose.yml --env-file BE/.env down --remove
 ## how to test
 
 ```shell
-cd cf
+cd ara
 docker compose --file docker/docker-compose.yml --env-file BE/.env up -d
 
 docker exec -it ara-php-dev bash
@@ -68,7 +68,7 @@ docker exec -it ara-php-dev bash
 ## how to dev
 
 ```shell
-cd cf
+cd ara
 docker compose --file docker/docker-compose.yml --env-file BE/.env up -d
 ```
 
@@ -77,7 +77,7 @@ api: http://localhost/api
 ## how to reset 
 
 ```shell
-cd cf
+cd ara
 docker compose --file docker/docker-compose.yml --env-file BE/.env down --remove-orphans && \
 docker compose --file docker/docker-compose.yml --env-file BE/.env build --no-cache --pull && \
 docker compose --file docker/docker-compose.yml --env-file BE/.env up -d
@@ -86,7 +86,7 @@ docker compose --file docker/docker-compose.yml --env-file BE/.env up -d
 ## how to reset database
 
 ```shell
-cd cf
+cd ara
 docker exec -it ara-php-dev bash
     cd /var/www/
     php bin/console cache:pool:clear cache.global_clearer
