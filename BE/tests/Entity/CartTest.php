@@ -91,7 +91,7 @@ class CartTest extends ApiTestCase
         $data = [
             'items' => [
                 [
-                    'product' => self::PRODUCTS_URL . '/' . self::PRODUCT_ID_2,
+                    'product' => self::PRODUCTS_URL . '/' . self::PRODUCT_ID_1,
                     'quantity' => 1
                 ],
                 [
@@ -117,11 +117,9 @@ class CartTest extends ApiTestCase
 
         /** @var Product $product1 */
         $product1 = $this->productRepository->find(self::PRODUCT_ID_1);
-        /** @var Product $product2 */
-        $product2 = $this->productRepository->find(self::PRODUCT_ID_2);
 
         $expectedItems = [
-            ['name' => $product2->getName(), 'price' => $product2->getPrice(), 'quantity' => 1],
+            ['name' => $product1->getName(), 'price' => $product1->getPrice(), 'quantity' => 1],
             ['name' => $product1->getName(), 'price' => $product1->getPrice(), 'quantity' => 2],
         ];
 
