@@ -28,10 +28,11 @@ class CartTest extends ApiTestCase
 
         $this->assertResponseStatusCodeSame(200);
 
-        /** @var object{id: int, user: string} $cart */
+        /** @var object{id: int, user: string, totalValue: float} $cart */
         $cart = json_decode($response->getContent());
         $this->assertSame(self::CART_ID, $cart->id);
         $this->assertSame(self::USERS_URL . '/' . self::USER_ID, $cart->user);
+        $this->assertEquals(54.4, $cart->totalValue);
     }
 
     public function testGetNotFound(): void

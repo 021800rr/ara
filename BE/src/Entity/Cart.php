@@ -89,6 +89,18 @@ class Cart
         $this->createdAt = new DateTimeImmutable();
     }
 
+    #[Groups(['cart:read'])]
+    public function getTotalValue(): float
+    {
+        $totalValue = 0.0;
+
+        foreach ($this->items as $item) {
+            $totalValue += $item->getPrice() * $item->getQuantity();
+        }
+
+        return $totalValue;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
