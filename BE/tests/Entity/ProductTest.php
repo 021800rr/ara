@@ -31,6 +31,7 @@ class ProductTest extends ApiTestCase
     {
         $this->editorToken = $this->login(self::EDITOR_MAIL, self::PLAIN_PASSWORD);
         $this->userToken = $this->login(self::USER_MAIL, self::PLAIN_PASSWORD);
+        $this->setUpRepositories();
     }
 
     public function testUserCanAccessProducts(): void
@@ -78,6 +79,21 @@ class ProductTest extends ApiTestCase
     public function testEditorCanUpdateProduct(): void
     {
         $client = self::createClient();
+
+        $response = $client->request('GET', self::PRODUCTS_URL . '/' . self::PRODUCT_ID_1, [
+            'auth_bearer' => $this->editorToken,
+            'headers' => self::HEADERS,
+        ]);
+
+        $this->assertResponseStatusCodeSame(200);
+
+        $apiProduct = $response->toArray();
+        /** @var Product $dbProduct */
+        $dbProduct = $this->productRepository->find(self::PRODUCT_ID_1);
+
+        $this->assertEquals($dbProduct->getName(), $apiProduct['name']);
+        $this->assertEquals($dbProduct->getDescription(), $apiProduct['description']);
+        $this->assertEquals($dbProduct->getPrice(), $apiProduct['price']);
 
         $client->request('PUT', self::PRODUCTS_URL . '/' . self::PRODUCT_ID_1, [
             'auth_bearer' => $this->editorToken,
