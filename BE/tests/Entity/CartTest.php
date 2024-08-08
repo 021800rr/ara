@@ -81,7 +81,7 @@ class CartTest extends ApiTestCase
         $cart = json_decode($response->getContent());
 
         $this->assertSame(self::USERS_URL . '/' . self::USER_ID, $cart->user);
-        $this->assertGreaterThanOrEqual($now->format(DateTime::ATOM), $cart->createdAt);
+        $this->assertGreaterThan($now->format(DateTime::ATOM), $cart->createdAt);
     }
 
     public function testPut(): void

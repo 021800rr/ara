@@ -150,4 +150,45 @@ class ProductTest extends ApiTestCase
             [3, 0, []], // Third page
         ];
     }
+
+    public function testDefaultOrder(): void
+    {
+        $response = self::createClient()->request('GET', self::PRODUCTS_URL, [
+            'auth_bearer' => $this->editorToken,
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $products = $response->toArray()[self::HYDRA_MEMBER];
+        $this->assertCount(3, $products);
+        $expectedNames = ['Product 1', 'Product 2', 'Product 3'];
+
+        foreach ($expectedNames as $index => $expectedName) {
+            $this->assertEquals($expectedName, $products[$index]['name']);
+        }
+
+        self::createClient()->request('POST', self::PRODUCTS_URL, [
+            'auth_bearer' => $this->editorToken,
+            'headers' => self::HEADERS,
+            'json' => self::NEW_PRODUCT,
+        ]);
+
+        $this->assertResponseStatusCodeSame(201);
+
+        $response = self::createClient()->request('GET', self::PRODUCTS_URL, [
+            'auth_bearer' => $this->editorToken,
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $products = $response->toArray()[self::HYDRA_MEMBER];
+        $this->assertCount(3, $products);
+        $expectedNames = ['New Product', 'Product 1', 'Product 2'];
+
+        foreach ($expectedNames as $index => $expectedName) {
+            $this->assertEquals($expectedName, $products[$index]['name']);
+        }
+
+        $this->assertGreaterThan($products[1]['createdAt'], $products[0]['createdAt']);
+    }
 }

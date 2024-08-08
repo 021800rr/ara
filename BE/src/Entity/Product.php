@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\Put;
 use App\Dto\ProductDto;
 use App\Repository\ProductRepository;
 use App\State\ProductProcessor;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -30,8 +31,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(
             uriTemplate: '/products',
             paginationItemsPerPage: 3,
+            order: ['createdAt' => 'DESC'],
             normalizationContext: ['groups' => ['product:read']],
-            security: 'is_granted("' . User::ROLE_USER . '")',
+            security: 'is_granted("' . User::ROLE_USER . '")'
         ),
         new Post(
             uriTemplate: '/products',
@@ -53,7 +55,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         )
     ]
 )]
-#[ApiFilter(OrderFilter::class, properties: ['id', 'name', 'description'])]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'name', 'description', 'createdAt'])]
 #[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial', 'description' => 'ipartial'])]
 class Product
 {
@@ -81,6 +83,17 @@ class Product
     #[Assert\Positive]
     #[Groups(['product:read', 'product:write'])]
     private null|float|int $price;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['product:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Type(DateTimeImmutable::class)]
+    private DateTimeImmutable $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -121,5 +134,10 @@ class Product
         $this->price = $price;
 
         return $this;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }
