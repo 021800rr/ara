@@ -35,10 +35,10 @@ class ProductRepositoryTest extends ApiTestCase
     public function testRemoveProduct(): void
     {
         /** @var Product $product */
-        $product = $this->productRepository->find(1);
+        $product = $this->productRepository->find(4);
         $this->productRepository->remove($product, true);
 
-        $removedProduct = $this->productRepository->find(1);
+        $removedProduct = $this->productRepository->find(4);
 
         $this->assertNull($removedProduct);
     }

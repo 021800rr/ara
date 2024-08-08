@@ -122,7 +122,7 @@ class ProductTest extends ApiTestCase
 
     public function testEditorCanDeleteProduct(): void
     {
-        self::createClient()->request('DELETE', self::PRODUCTS_URL . "/1", [
+        self::createClient()->request('DELETE', self::PRODUCTS_URL . "/4", [
             'auth_bearer' => $this->editorToken,
         ]);
 
