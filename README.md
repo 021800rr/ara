@@ -1,3 +1,24 @@
+## wymagania dotyczące serwisu
+
+Serwis realizuje obsługę katalogu produktów oraz koszyka. Klient serwisu powinien móc:
+
+* dodać produkt do katalogu,
+* usunąć produkt z katalogu,
+* wyświetlić produkty z katalogu jako stronicowaną listę o co najwyżej 3 produktach na stronie,
+* utworzyć koszyk,
+* dodać produkt do koszyka, przy czym koszyk może zawierać maksymalnie 3 produkty,
+* usunąć produkt z koszyka,
+* wyświetlić produkty w koszyku, wraz z ich całkowitą wartością.
+
+## Zadanie
+
+Użytkownicy i testerzy serwisu zgłosili następujące problemy i prośby:
+
+* Chcemy móc dodawać do koszyka ten sam produkt kilka razy, o ile nie zostanie przekroczony sumaryczny limit sztuk
+  produktów.
+* Najnowsze (ostatnio dodane) produkty powinny być dostępne na początkowych stronach listy produktów.
+* Musimy mieć możliwość edycji produktów. Czasami w nazwach są literówki, innym razem cena jest nieaktualna.
+
 ## install
 
 ```shell
@@ -47,64 +68,3 @@ optional environment shutdown
 ```    
 docker compose --file docker/docker-compose.yml --env-file BE/.env down --remove-orphans
 ```
-
-## how to test
-
-```shell
-cd ara
-docker compose --file docker/docker-compose.yml --env-file BE/.env up -d
-
-docker exec -it ara-php-dev bash
-    cd /var/www/
-    make tests
-```
-
-## how to dev
-
-```shell
-cd ara
-docker compose --file docker/docker-compose.yml --env-file BE/.env up -d
-```
-
-## how to reset 
-
-```shell
-cd ara
-docker compose --file docker/docker-compose.yml --env-file BE/.env down --remove-orphans && \
-docker compose --file docker/docker-compose.yml --env-file BE/.env build --no-cache --pull && \
-docker compose --file docker/docker-compose.yml --env-file BE/.env up -d
-```
-
-## how to reset database
-
-```shell
-cd ara
-docker exec -it ara-php-dev bash
-    cd /var/www/
-    php bin/console cache:pool:clear cache.global_clearer
-    php bin/console --env=dev doctrine:database:drop --force
-    php bin/console --env=dev doctrine:database:create
-    php bin/console --env=dev --no-interaction doctrine:migrations:migrate
-    php bin/console --env=dev doctrine:fixtures:load -q
-    php bin/console cache:pool:clear cache.global_clearer
-```
-## wymagania dotyczące serwisu
-
-Serwis realizuje obsługę katalogu produktów oraz koszyka. Klient serwisu powinien móc:
-
-* dodać produkt do katalogu,
-* usunąć produkt z katalogu,
-* wyświetlić produkty z katalogu jako stronicowaną listę o co najwyżej 3 produktach na stronie,
-* utworzyć koszyk,
-* dodać produkt do koszyka, przy czym koszyk może zawierać maksymalnie 3 produkty,
-* usunąć produkt z koszyka,
-* wyświetlić produkty w koszyku, wraz z ich całkowitą wartością.
-
-## Zadanie
-
-Użytkownicy i testerzy serwisu zgłosili następujące problemy i prośby:
-
-* Chcemy móc dodawać do koszyka ten sam produkt kilka razy, o ile nie zostanie przekroczony sumaryczny limit sztuk
-  produktów. 
-* Najnowsze (ostatnio dodane) produkty powinny być dostępne na początkowych stronach listy produktów.
-* Musimy mieć możliwość edycji produktów. Czasami w nazwach są literówki, innym razem cena jest nieaktualna.
